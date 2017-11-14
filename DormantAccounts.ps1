@@ -38,16 +38,16 @@ foreach ($user in $users)
     if ($user.enabled -eq $false)
     {
         $user.SamAccountName.ToLower() | Out-File -FilePath $DisabledAccountList -Append
-        (Get-Date -Format g) + "|" + $user.SamAccountName + "|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
+        (Get-Date -Format g) + "|" + $user.SamAccountName + "|Disabled|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
     }
     elseif ($user.PasswordLastSet -lt $Date)
     {
         $user.SamAccountName.ToLower() | Out-File -FilePath $LazyAccountList -Append
-        (Get-Date -Format g) + "|" + $user.SamAccountName + "|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
+        (Get-Date -Format g) + "|" + $user.SamAccountName + "|OldPassword|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
     }
     elseif ($lastlogon -lt $Date)
     {
         $user.SamAccountName.ToLower() | Out-File -FilePath $InactiveAccountList -Append
-        (Get-Date -Format g) + "|" + $user.SamAccountName + "|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
+        (Get-Date -Format g) + "|" + $user.SamAccountName + "|Inactive|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
     }
 }
