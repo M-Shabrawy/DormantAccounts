@@ -29,12 +29,13 @@ if (Test-Path -Path $AccountLogPath)
     Remove-Item -Path $AccountLogPath
 }
 
-$ADWSServer = Get-ADDomainController -Discover -Service ADWS
-$ServerName =  $ADWSServer.HostName.ToString()
+#$ADWSServer = Get-ADDomainController -Discover -Service ADWS
+#$ServerName =  $ADWSServer.HostName.ToString()
 $time = 0
 $Date = (Get-Date).AddDays(-45)
 
-$users = Get-ADUser -Server $ServerName -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
+#$users = Get-ADUser -Server $ServerName -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
+$users = Get-ADUser -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
 
 $lastlogon = 0
 
