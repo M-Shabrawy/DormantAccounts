@@ -1,22 +1,40 @@
-
-
+## PowerShell Script to check for Dormant Accounts in MS AD Domain
+### Created by Mohamed Al-Shabrawy
+###
+#### It requires PowerShell AD Tools module to be installed 
+###
+#### Use below command line to install under Administrator privilege
+####
+#### "dism /online /enable-feature /all /featurename:ActiveDirectory-PowerShell"
+####
+#### Port TCP/9389 required to access ADWS on DCs
+####
+#### Script will generate 4 files:
+####   - List of disabled accounts
+####   - List of inactive accounts
+####   - List of old password accounts
+####   - Log file
+#### All files will be overwritten everytime script is executed.
+### Calculations is based on 45 Days period.
 Import-Module ActiveDirectory
 
 $DisabledAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Disabled_Accounts.txt'
 $InactiveAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Inactive_Accounts.txt'
 $LazyAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Lazy_Accounts.txt'
 
-$AccountLogPath = 'C:\AD User Logs\Account.log'
+$AccountLogPath = 'D:\AD Account Log\Account.log'
 
-if (Get-Item -Path $AccountLogPath)
+if (Test-Path -Path $AccountLogPath)
 {
     Remove-Item -Path $AccountLogPath
 }
 
+$ADWSServer = Get-ADDomainController -Discover -Service ADWS
+$ServerName =  $ADWSServer.HostName.ToString()
 $time = 0
 $Date = (Get-Date).AddDays(-45)
 
-$users = Get-ADUser -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
+$users = Get-ADUser -Server $ServerName -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
 
 $lastlogon = 0
 

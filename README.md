@@ -7,6 +7,8 @@
 ####
 #### "dism /online /enable-feature /all /featurename:ActiveDirectory-PowerShell"
 ####
+#### Port TCP/9389 required to access ADWS on DCs
+####
 #### Script will generate 4 files:
 ####   - List of disabled accounts
 ####   - List of inactive accounts
