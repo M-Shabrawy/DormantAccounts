@@ -22,7 +22,7 @@ $DisabledAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\
 $InactiveAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Inactive_Accounts.txt'
 $LazyAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Lazy_Accounts.txt'
 
-$AccountLogPath = 'D:\AD Account Log\Account.log'
+$AccountLogPath = 'C:\AD Account Log\Account.log'
 
 if (Test-Path -Path $AccountLogPath)
 {
@@ -34,7 +34,6 @@ if (Test-Path -Path $AccountLogPath)
 $time = 0
 $Date = (Get-Date).AddDays(-45)
 
-#$users = Get-ADUser -Server $ServerName -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
 $users = Get-ADUser -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
 
 $lastlogon = 0
@@ -52,20 +51,24 @@ foreach ($user in $users)
     else
     {
         $lastlogon = ([DateTime]::FromFileTime($user.lastlogon))
+        Write-Host $lastlogon
     }
 
     if ($user.enabled -eq $false)
     {
+        Write-Host 'Add entry to Disabled Accounts'
         $user.SamAccountName.ToLower() | Out-File -FilePath $DisabledAccountList -Append
         (Get-Date -Format g) + "|" + $user.SamAccountName + "|Disabled|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
     }
     elseif ($user.PasswordLastSet -lt $Date)
     {
+        Write-Host 'Add entry to Lazy Accounts'
         $user.SamAccountName.ToLower() | Out-File -FilePath $LazyAccountList -Append
         (Get-Date -Format g) + "|" + $user.SamAccountName + "|OldPassword|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
     }
-    elseif ($lastlogon -lt $Date)
+    elseif (($lastlogon -lt $Date) -or ($lastlogon -eq $null))
     {
+        Write-Host 'Add entry to Inactive Accounts'
         $user.SamAccountName.ToLower() | Out-File -FilePath $InactiveAccountList -Append
         (Get-Date -Format g) + "|" + $user.SamAccountName + "|Inactive|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
     }
