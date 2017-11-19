@@ -18,6 +18,12 @@
 ### Calculations is based on 45 Days period.
 Import-Module ActiveDirectory
 
+trap [Exception] 
+{
+	write-error $("Exception: " + $_)
+	exit 1
+}
+
 $DisabledAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Disabled_Accounts.txt'
 $InactiveAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Inactive_Accounts.txt'
 $LazyAccountList = 'C:\Program Files\LogRhythm\LogRhythm Job Manager\config\list_import\Lazy_Accounts.txt'
@@ -27,6 +33,10 @@ $AccountLogPath = 'C:\AD Account Log\Account.log'
 if (Test-Path -Path $AccountLogPath)
 {
     Remove-Item -Path $AccountLogPath
+}
+else
+{
+
 }
 
 #$ADWSServer = Get-ADDomainController -Discover -Service ADWS
