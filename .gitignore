@@ -7,3 +7,5 @@
 /.vs/VSWorkspaceState.json
 /*.pssproj
 /*.sln
+/bin
+/obj
