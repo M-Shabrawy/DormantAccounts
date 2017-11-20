@@ -61,25 +61,24 @@ foreach ($user in $users)
     else
     {
         $lastlogon = ([DateTime]::FromFileTime($user.lastlogon))
-        Write-Host $lastlogon
     }
 
     if ($user.enabled -eq $false)
     {
-        Write-Host 'Add entry to Disabled Accounts'
         $user.SamAccountName.ToLower() | Out-File -FilePath $DisabledAccountList -Append
         (Get-Date -Format g) + "|" + $user.SamAccountName + "|Disabled|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
+		Write-Host "Added entry $user.SamAccountName to Disabled Accounts"
     }
     elseif ($user.PasswordLastSet -lt $Date)
     {
-        Write-Host 'Add entry to Lazy Accounts'
         $user.SamAccountName.ToLower() | Out-File -FilePath $LazyAccountList -Append
         (Get-Date -Format g) + "|" + $user.SamAccountName + "|OldPassword|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
+		Write-Host "Add entry $user.SamAccountName to Lazy Accounts"
     }
     elseif (($lastlogon -lt $Date) -or ($lastlogon -eq $null))
     {
-        Write-Host 'Add entry to Inactive Accounts'
         $user.SamAccountName.ToLower() | Out-File -FilePath $InactiveAccountList -Append
         (Get-Date -Format g) + "|" + $user.SamAccountName + "|Inactive|" + $lastlogon + "|" + $user.Enabled + "|" + $user.PasswordLastSet + "|" + $user.PasswordNeverExpires | Out-File -FilePath $AccountLogPath -Append
+		Write-Host "Add entry $user.SamAccountName to Inactive Accounts"
     }
 }
