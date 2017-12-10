@@ -16,6 +16,7 @@
 ####   - Log file
 #### All files will be overwritten everytime script is executed.
 ### Calculations is based on 45 Days period.
+
 Import-Module ActiveDirectory
 
 trap [Exception] 
@@ -44,23 +45,23 @@ else
 $time = 0
 $Date = (Get-Date).AddDays(-45)
 
-$users = Get-ADUser -Filter * -Properties SamAccountName,lastlogon,passwordlastset,passwordneverexpires
+$users = Get-ADUser -Filter * -Properties SamAccountName,lastlogontimestamp,passwordlastset,passwordneverexpires
 
 $lastlogon = 0
 
 foreach ($user in $users)
 {
-    if ($user.lastlogon -eq '')
+    if ($user.lastlogontimestamp -eq '')
     {
        $lastlogon = $null
     }
-    elseif ($user.lastlogon -eq $null)
+    elseif ($user.lastlogontimestamp -eq $null)
     {
        $lastlogon = $null
     }
     else
     {
-        $lastlogon = ([DateTime]::FromFileTime($user.lastlogon))
+        $lastlogon = ([DateTime]::FromFileTime($user.lastlogontimestamp))
     }
 
     if ($user.enabled -eq $false)
